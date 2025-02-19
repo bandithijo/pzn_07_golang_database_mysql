@@ -105,3 +105,74 @@ created_at: %s
 
 	defer rows.Close()
 }
+
+func TestQuerySqlWithParameter(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	username := "admin"
+	password := "secret"
+
+	ctx := context.Background()
+
+	query := "SELECT username FROM user WHERE username = '" + username +
+	         "' AND password = '" + password +
+			 "' LIMIT 1"
+
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+
+	if rows.Next() {
+		var username string
+		
+		err := rows.Scan(&username)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Welcome, %s!\n", username)
+	} else {
+		fmt.Println("Failed to login")
+	}
+
+	defer rows.Close()
+}
+
+func TestQuerySqlWithSqlInjection(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	username := "admin'; #" // SQL injection from user input
+	password := "wrong"     // wrong password
+
+	ctx := context.Background()
+
+	// BAD PRACTICE!
+	query := "SELECT username FROM user WHERE username = '" + username +
+	         "' AND password = '" + password +
+			 "' LIMIT 1"
+
+    fmt.Println(query)
+
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+
+	if rows.Next() {
+		var username string
+		
+		err := rows.Scan(&username)
+		if err != nil {
+			panic(err)
+		}
+
+		fmt.Printf("Welcome, %s!\n", username)
+	} else {
+		fmt.Println("Failed to login")
+	}
+
+	defer rows.Close()
+}
