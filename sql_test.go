@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"testing"
+	"time"
 )
 
 
@@ -45,6 +47,60 @@ func TestQuerySql(t *testing.T) {
 		}
 
 		fmt.Println("id:", id, ", name:", name)
+	}
+
+	defer rows.Close()
+}
+
+func TestDataTypeColumn(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	query := "SELECT id, name, email, balance, rating, birth_date, married, created_at FROM customer"
+
+	rows, err := db.QueryContext(ctx, query)
+	if err != nil {
+		panic(err)
+	}
+
+	for rows.Next() {
+		var id, name string
+		var email sql.NullString
+		var balance int32
+		var rating float64
+		var birthDate sql.NullTime
+		var createdAt time.Time
+		var married bool
+
+		err := rows.Scan(&id, &name, &email, &balance, &rating, &birthDate, &married, &createdAt)
+		if err != nil {
+			panic(err)
+		}
+
+		emailString := "NULL"
+		if email.Valid {
+			emailString = email.String
+		}
+
+		birthDateString := "NULL"
+		if birthDate.Valid {
+			birthDateString = birthDate.Time.Format("2006-01-02 15:04:05")
+		}
+
+		message := `---
+id: %s,
+name: %s,
+email: %v,
+balance: %d,
+rating: %f,
+birth_date: %v,
+married: %t,
+created_at: %s
+`
+
+		fmt.Printf(message, id, name, emailString, balance, rating, birthDateString, married, createdAt)
 	}
 
 	defer rows.Close()
