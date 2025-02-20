@@ -235,3 +235,27 @@ func TestExecSqlWithSqlInjectionSafe(t *testing.T) {
 
 	fmt.Println("Success insert new user")
 }
+
+func TestAutoIncrement(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	email := "rizqi@gmail.com"
+	comment := "Hello! Saya sedang belajar bahasa pemrograman Go."
+
+	ctx := context.Background()
+
+	query := "INSERT INTO comments(email, comment) VALUES(?, ?)"
+
+	result, err := db.ExecContext(ctx, query, email, comment)
+	if err != nil {
+		panic(err)
+	}
+	
+	insertId, err := result.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Success insert new comment with id", insertId)
+}
