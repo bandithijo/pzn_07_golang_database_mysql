@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"pzn_07_golang_database_mysql/database"
 	"strconv"
 	"testing"
 	"time"
@@ -11,7 +12,7 @@ import (
 
 
 func TestExecSql(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	ctx := context.Background()
@@ -27,7 +28,7 @@ func TestExecSql(t *testing.T) {
 }
 
 func TestQuerySql(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	ctx := context.Background()
@@ -54,7 +55,7 @@ func TestQuerySql(t *testing.T) {
 }
 
 func TestDataTypeColumn(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	ctx := context.Background()
@@ -108,7 +109,7 @@ created_at: %s
 }
 
 func TestQuerySqlWithParameter(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	username := "admin"
@@ -142,7 +143,7 @@ func TestQuerySqlWithParameter(t *testing.T) {
 }
 
 func TestQuerySqlWithSqlInjection(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	username := "admin'; #" // SQL injection from user input
@@ -179,7 +180,7 @@ func TestQuerySqlWithSqlInjection(t *testing.T) {
 }
 
 func TestQuerySqlWithSqlInjectionSafe(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	username := "admin'; #" // SQL injection from user input
@@ -219,7 +220,7 @@ func TestQuerySqlWithSqlInjectionSafe(t *testing.T) {
 }
 
 func TestExecSqlWithSqlInjectionSafe(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	username := "rizqi'; DROP TABLE user; #"
@@ -238,7 +239,7 @@ func TestExecSqlWithSqlInjectionSafe(t *testing.T) {
 }
 
 func TestAutoIncrement(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	email := "rizqi@gmail.com"
@@ -262,7 +263,7 @@ func TestAutoIncrement(t *testing.T) {
 }
 
 func TestPrepareStatement(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	ctx := context.Background()
@@ -293,7 +294,7 @@ func TestPrepareStatement(t *testing.T) {
 }
 
 func TestTransaction(t *testing.T) {
-	db := GetConnection()
+	db := database.GetConnection()
 	defer db.Close()
 
 	tx, err := db.Begin()
